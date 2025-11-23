@@ -13,9 +13,9 @@ A property that knows how to update itself:
 ```kotlin
 data class CountProperty(
     override val value: Int
-) : StateProperty<AppState, AppAction, Int, CountProperty>() {
+) : StateProperty<CounterState, CounterAction, Int, CountProperty>() {
 
-    override fun spec(stateRecord: AppState, action: AppAction): CountProperty {
+    override fun spec(context: UpdateContext<CounterState, CounterAction>, action: CounterAction): CountProperty {
         return when (action) {
             is Increment -> CountProperty(value + 1)
             is Decrement -> CountProperty(value - 1)
@@ -30,7 +30,7 @@ data class CountProperty(
 A container that groups properties together:
 
 ```kotlin
-data class AppState(
+data class CounterState(
     val count: CountProperty,
     val message: MessageProperty
 ) : StateRecord
@@ -60,15 +60,15 @@ fun reducer(stateRecord: AppState, action: Action): AppState {
 ```kotlin
 // Each property manages itself
 data class CountProperty(...) {
-    override fun spec(stateRecord: AppState, action: AppAction) = when (action) {
+    override fun spec(context: UpdateContext<CounterState, CounterAction>, action: CounterAction) = when (action) {
         is Increment -> CountProperty(value + 1)
         else -> this
     }
 }
 
 data class MessageProperty(...) {
-    override fun spec(stateRecord: AppState, action: AppAction) = when (action) {
-        is Increment -> MessageProperty("Count is ${state.count.value + 1}")
+    override fun spec(context: UpdateContext<CounterState, CounterAction>, action: CounterAction) = when (action) {
+        is Increment -> MessageProperty("Count is ${context.compute(CounterState::count) + 1}")
         else -> this
     }
 }
@@ -78,10 +78,32 @@ data class MessageProperty(...) {
 
 1. **Distributed Logic**: Update logic lives with the property, not in a central reducer
 2. **Less Boilerplate**: No need to copy entire state objects
-3. **Automatic Updates**: Reflection-based orchestration calls each property's `spec()`
-4. **Type-Safe**: Compile-time safety for each property
+3. **Lazy Evaluation**: Properties can access other properties' updated values via `context.compute()`
+4. **Dependency Management**: Automatic detection of circular dependencies
+5. **Type-Safe**: Compile-time safety for each property
 
 ## Advanced Features
+
+### UpdateContext
+
+Access other properties' computed values during updates:
+
+```kotlin
+data class MessageProperty(
+    override val value: String
+) : StateProperty<CounterState, CounterAction, String, MessageProperty>() {
+
+    override fun spec(context: UpdateContext<CounterState, CounterAction>, action: CounterAction): MessageProperty {
+        // Lazily compute the updated count value
+        val newCount = context.compute(CounterState::count)
+
+        return when (action) {
+            is Increment -> MessageProperty("Incremented to $newCount")
+            else -> this
+        }
+    }
+}
+```
 
 ### SideEffect
 
@@ -89,16 +111,22 @@ Handle async operations after actions (API calls, logging, etc.):
 
 ```kotlin
 class AutoSaveEffect : SideEffect<CartState, CartAction> {
-    override suspend fun execute(
+    override suspend operator fun invoke(
         stateRecord: CartState,
         action: CartAction,
         dispatch: (CartAction) -> Unit
     ) {
         when (action) {
             is CartAction.AddItem -> {
-                dispatch(CartAction.SaveStarted)
-                api.saveCart(stateRecord)
-                dispatch(CartAction.SaveCompleted)
+                val action = runCatching {
+                    api.saveCart(stateRecord)
+                }.onSucecss {
+                    SaveCompleted
+                }.onFailure { e ->
+                    SaveFailed(e)
+                }
+
+                dispatch(action)
             }
         }
     }
@@ -115,13 +143,13 @@ val store = ChartStore(
 See working examples in the source code:
 
 - **Basic Example**: [`example/CounterExample.kt`](src/main/kotlin/example/CounterExample.kt)
-    - Simple counter with automatic state updates
+    - Simple counter with ChartStore
     - Demonstrates basic StateProperty usage
 
-- **Advanced Example**: [`example/advanced/UserExample.kt`](src/main/kotlin/example/advanced/UserExample.kt)
-    - Using sealed classes with StateProperty
-    - Using nullable types
-    - Pattern matching on state values
+- **Advanced Examples**:
+    - [`example/advanced/UserExample.kt`](src/main/kotlin/example/advanced/UserExample.kt) - Sealed classes and nullable types
+    - [`example/advanced/MutualDependencyExample.kt`](src/main/kotlin/example/advanced/MutualDependencyExample.kt) - Property dependencies via UpdateContext
+    - [`example/advanced/CircularDependencyExample.kt`](src/main/kotlin/example/advanced/CircularDependencyExample.kt) - Circular dependency detection
 
 Run examples:
 
