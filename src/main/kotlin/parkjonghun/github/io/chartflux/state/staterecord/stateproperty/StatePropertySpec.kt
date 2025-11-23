@@ -2,6 +2,7 @@ package parkjonghun.github.io.chartflux.state.staterecord.stateproperty
 
 import parkjonghun.github.io.chartflux.action.Action
 import parkjonghun.github.io.chartflux.state.staterecord.StateRecord
+import parkjonghun.github.io.chartflux.state.staterecord.UpdateContext
 
 interface StatePropertySpec<
         SR : StateRecord,
@@ -10,5 +11,5 @@ interface StatePropertySpec<
         SP : StateProperty<SR, A, T, SP>,
         > {
     fun initial(): SP
-    fun spec(stateRecord: SR, action: A): SP
+    fun spec(context: UpdateContext<SR, A>, action: A): SP
 }

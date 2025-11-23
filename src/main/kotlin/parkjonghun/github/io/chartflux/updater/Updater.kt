@@ -12,6 +12,7 @@ import kotlinx.coroutines.sync.withLock
 import parkjonghun.github.io.chartflux.action.Action
 import parkjonghun.github.io.chartflux.sideeffect.SideEffect
 import parkjonghun.github.io.chartflux.state.staterecord.StateRecord
+import parkjonghun.github.io.chartflux.state.staterecord.updateStateRecord
 
 internal open class Updater<SR : StateRecord, A : Action>(
     private val mutableStateRecord: MutableStateFlow<SR>,
@@ -55,7 +56,7 @@ internal open class Updater<SR : StateRecord, A : Action>(
 
     @Suppress("UNCHECKED_CAST")
     protected open fun computeNextState(currentStateRecord: SR, action: A): SR =
-        currentStateRecord.updateWithFindPropertySpecs(action) as SR
+        updateStateRecord(currentStateRecord, action) as SR
 
     fun cancel() = job.cancel()
 }

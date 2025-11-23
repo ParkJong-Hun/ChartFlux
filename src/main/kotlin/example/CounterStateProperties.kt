@@ -1,5 +1,6 @@
 package example
 
+import parkjonghun.github.io.chartflux.state.staterecord.UpdateContext
 import parkjonghun.github.io.chartflux.state.staterecord.stateproperty.StateProperty
 
 /**
@@ -14,7 +15,7 @@ data class CountProperty(
         return CountProperty(0)
     }
 
-    override fun spec(stateRecord: CounterState, action: CounterAction): CountProperty {
+    override fun spec(context: UpdateContext<CounterState, CounterAction>, action: CounterAction): CountProperty {
         return when (action) {
             is CounterAction.Increment -> CountProperty(value + 1)
             is CounterAction.Decrement -> CountProperty(value - 1)
@@ -25,7 +26,10 @@ data class CountProperty(
 
 /**
  * MessageProperty manages the status message
- * It can access the full state to create contextual messages
+ * It can access other properties' computed values through the context
+ *
+ * This demonstrates lazy evaluation: MessageProperty can request the updated
+ * count value even if CountProperty hasn't been computed yet
  */
 data class MessageProperty(
     override val value: String
@@ -35,14 +39,17 @@ data class MessageProperty(
         return MessageProperty("Ready")
     }
 
-    override fun spec(stateRecord: CounterState, action: CounterAction): MessageProperty {
+    override fun spec(context: UpdateContext<CounterState, CounterAction>, action: CounterAction): MessageProperty {
+        // Get the updated count value using lazy evaluation
+        val newCount = context.compute(CounterState::count)
+
         return when (action) {
             is CounterAction.Increment ->
-                MessageProperty("Incremented to ${stateRecord.count.value + 1}")
+                MessageProperty("Incremented to $newCount")
             is CounterAction.Decrement ->
-                MessageProperty("Decremented to ${stateRecord.count.value - 1}")
+                MessageProperty("Decremented to $newCount")
             is CounterAction.SetValue ->
-                MessageProperty("Set to ${action.value}")
+                MessageProperty("Set to $newCount")
         }
     }
 }

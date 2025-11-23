@@ -1,5 +1,6 @@
 package example.advanced
 
+import parkjonghun.github.io.chartflux.state.staterecord.UpdateContext
 import parkjonghun.github.io.chartflux.state.staterecord.stateproperty.StateProperty
 
 /**
@@ -16,7 +17,7 @@ data class UserDataProperty(
         return UserDataProperty(LoadingState.Loading)
     }
 
-    override fun spec(stateRecord: UserState, action: UserAction): UserDataProperty {
+    override fun spec(context: UpdateContext<UserState, UserAction>, action: UserAction): UserDataProperty {
         return when (action) {
             is UserAction.LoadUser ->
                 UserDataProperty(LoadingState.Loading)
@@ -29,9 +30,12 @@ data class UserDataProperty(
 }
 
 /**
- * Example: StateProperty with nullable value type
+ * Example: StateProperty with nullable value type and dependency on another property
  *
- * Demonstrates using nullable types with StateProperty
+ * Demonstrates:
+ * - Using nullable types with StateProperty
+ * - Accessing other property values through UpdateContext
+ * - Making decisions based on other properties' updated values
  */
 data class LastErrorProperty(
     override val value: String?
@@ -41,12 +45,23 @@ data class LastErrorProperty(
         return LastErrorProperty(null)
     }
 
-    override fun spec(stateRecord: UserState, action: UserAction): LastErrorProperty {
+    override fun spec(context: UpdateContext<UserState, UserAction>, action: UserAction): LastErrorProperty {
+        // Example: Clear error only if user data was successfully loaded
+        val userData = context.compute(UserState::userData)
+
         return when (action) {
             is UserAction.UserLoadFailed ->
                 LastErrorProperty(action.error)
-            is UserAction.LoadUser, is UserAction.UserLoaded ->
+            is UserAction.LoadUser ->
                 LastErrorProperty(null)
+            is UserAction.UserLoaded -> {
+                // Only clear error if data is actually in Success state
+                if (userData is LoadingState.Success) {
+                    LastErrorProperty(null)
+                } else {
+                    LastErrorProperty(value) // Keep current error
+                }
+            }
         }
     }
 }
