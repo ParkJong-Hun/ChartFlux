@@ -25,5 +25,5 @@ kotlin {
 }
 
 application {
-    mainClass.set("example.CounterExampleKt")
+    mainClass.set(project.findProperty("mainClass") as String? ?: "example.CounterExampleKt")
 }
