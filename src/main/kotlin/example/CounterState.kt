@@ -1,6 +1,6 @@
 package example
 
-import parkjonghun.github.io.chartflux.staterecord.state.staterecord.StateRecord
+import parkjonghun.github.io.chartflux.state.staterecord.StateRecord
 
 /**
  * CounterState is a StateRecord that groups related StateProperties

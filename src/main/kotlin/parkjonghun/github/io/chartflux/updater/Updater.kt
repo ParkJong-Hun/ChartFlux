@@ -1,4 +1,4 @@
-package parkjonghun.github.io.chartflux.staterecord.updater
+package parkjonghun.github.io.chartflux.updater
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import parkjonghun.github.io.chartflux.staterecord.action.Action
-import parkjonghun.github.io.chartflux.staterecord.state.staterecord.StateRecord
+import parkjonghun.github.io.chartflux.action.Action
+import parkjonghun.github.io.chartflux.state.staterecord.StateRecord
 
 internal open class Updater<SR : StateRecord, A : Action>(
     private val mutableStateRecord: MutableStateFlow<SR>,

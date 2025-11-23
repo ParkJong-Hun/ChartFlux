@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import parkjonghun.github.io.chartflux.staterecord.action.Action
-import parkjonghun.github.io.chartflux.staterecord.state.staterecord.StateRecord
-import parkjonghun.github.io.chartflux.staterecord.updater.Updater
+import parkjonghun.github.io.chartflux.action.Action
+import parkjonghun.github.io.chartflux.state.staterecord.StateRecord
+import parkjonghun.github.io.chartflux.updater.Updater
 
 class ChartStore<STATE_RECORD : StateRecord, ACTION : Action>(
     initialStateRecord: STATE_RECORD,

@@ -1,6 +1,6 @@
 package example.advanced
 
-import parkjonghun.github.io.chartflux.staterecord.state.staterecord.StateRecord
+import parkjonghun.github.io.chartflux.state.staterecord.StateRecord
 
 /**
  * Example: StateRecord with complex property types

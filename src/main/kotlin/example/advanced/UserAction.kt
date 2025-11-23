@@ -1,6 +1,6 @@
 package example.advanced
 
-import parkjonghun.github.io.chartflux.staterecord.action.Action
+import parkjonghun.github.io.chartflux.action.Action
 
 /**
  * Actions for user data fetching example

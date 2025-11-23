@@ -1,6 +1,6 @@
 package example.advanced
 
-import parkjonghun.github.io.chartflux.staterecord.state.staterecord.stateproperty.StateProperty
+import parkjonghun.github.io.chartflux.state.staterecord.stateproperty.StateProperty
 
 /**
  * Example: StateProperty with sealed class value type

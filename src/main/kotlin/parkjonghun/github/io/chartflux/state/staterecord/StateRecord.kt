@@ -1,8 +1,8 @@
-package parkjonghun.github.io.chartflux.staterecord.state.staterecord
+package parkjonghun.github.io.chartflux.state.staterecord
 
-import parkjonghun.github.io.chartflux.staterecord.action.Action
-import parkjonghun.github.io.chartflux.staterecord.state.State
-import parkjonghun.github.io.chartflux.staterecord.state.staterecord.stateproperty.StateProperty
+import parkjonghun.github.io.chartflux.action.Action
+import parkjonghun.github.io.chartflux.state.State
+import parkjonghun.github.io.chartflux.state.staterecord.stateproperty.StateProperty
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 

@@ -1,6 +1,6 @@
 package example
 
-import parkjonghun.github.io.chartflux.staterecord.state.staterecord.stateproperty.StateProperty
+import parkjonghun.github.io.chartflux.state.staterecord.stateproperty.StateProperty
 
 /**
  * CountProperty manages the counter value

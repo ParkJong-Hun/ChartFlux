@@ -1,6 +1,6 @@
 package example
 
-import parkjonghun.github.io.chartflux.staterecord.action.Action
+import parkjonghun.github.io.chartflux.action.Action
 
 /**
  * Actions for the counter example
