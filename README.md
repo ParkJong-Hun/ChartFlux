@@ -41,6 +41,7 @@ When an action is dispatched, each property's `spec()` is called automatically.
 ## Why?
 
 **Traditional Flux:**
+
 ```kotlin
 // One big reducer for everything
 fun reducer(stateRecord: AppState, action: Action): AppState {
@@ -55,6 +56,7 @@ fun reducer(stateRecord: AppState, action: Action): AppState {
 ```
 
 **ChartFlux:**
+
 ```kotlin
 // Each property manages itself
 data class CountProperty(...) {
@@ -79,20 +81,50 @@ data class MessageProperty(...) {
 3. **Automatic Updates**: Reflection-based orchestration calls each property's `spec()`
 4. **Type-Safe**: Compile-time safety for each property
 
+## Advanced Features
+
+### SideEffect
+
+Handle async operations after actions (API calls, logging, etc.):
+
+```kotlin
+class AutoSaveEffect : SideEffect<CartState, CartAction> {
+    override suspend fun execute(
+        stateRecord: CartState,
+        action: CartAction,
+        dispatch: (CartAction) -> Unit
+    ) {
+        when (action) {
+            is CartAction.AddItem -> {
+                dispatch(CartAction.SaveStarted)
+                api.saveCart(stateRecord)
+                dispatch(CartAction.SaveCompleted)
+            }
+        }
+    }
+}
+
+val store = ChartStore(
+    initialStateRecord = initialState,
+    sideEffects = listOf(AutoSaveEffect())
+)
+```
+
 ## Examples
 
 See working examples in the source code:
 
 - **Basic Example**: [`example/CounterExample.kt`](src/main/kotlin/example/CounterExample.kt)
-  - Simple counter with automatic state updates
-  - Demonstrates basic StateProperty usage
+    - Simple counter with automatic state updates
+    - Demonstrates basic StateProperty usage
 
 - **Advanced Example**: [`example/advanced/UserExample.kt`](src/main/kotlin/example/advanced/UserExample.kt)
-  - Using sealed classes with StateProperty
-  - Using nullable types
-  - Pattern matching on state values
+    - Using sealed classes with StateProperty
+    - Using nullable types
+    - Pattern matching on state values
 
-Run the basic example:
+Run examples:
+
 ```bash
 ./gradlew run
 ```
