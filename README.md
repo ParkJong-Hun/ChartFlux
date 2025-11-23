@@ -54,7 +54,7 @@ fun reducer(stateRecord: AppState, action: Action): AppState {
 }
 ```
 
-**ChartStore:**
+**ChartFlux:**
 ```kotlin
 // Each property manages itself
 data class CountProperty(...) {
