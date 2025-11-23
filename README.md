@@ -1,4 +1,4 @@
-# ChartStore
+# ChartFlux
 
 A Kotlin state management pattern where each state property manages its own update logic.
 
